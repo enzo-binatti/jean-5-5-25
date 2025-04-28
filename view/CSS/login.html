@@ -186,57 +186,44 @@
     <div class="login-container">
         <h2>Bem-vindo de volta</h2>
         
-		<form id="loginForm">
-			<div class="input-group">
-				<i class="fas fa-user input-icon"></i>
-				<input type="text" name="email" id="email" placeholder="Usuário ou E-mail" required>
-			</div>
-		
-			<div class="input-group">
-				<i class="fas fa-lock input-icon"></i>
-				<input type="password" name="senha" id="senha" placeholder="Senha" required>
-			</div>
-		
-			<button type="submit">Entrar</button>
-		
-			<div class="options">
-				<label>
-					<input type="checkbox"> Lembrar-me
-				</label>
-				<a href="recuperacao.html" style="float: right;">Esqueceu a senha?</a>
-			</div>
-		
-			<!-- resto permanece igual -->
-		</form>
-		
-		<script>
-		document.getElementById('loginForm').addEventListener('submit', function(e) {
-			e.preventDefault();
-		
-			const formData = new URLSearchParams();
-			formData.append('email', document.getElementById('email').value);
-			formData.append('senha', document.getElementById('senha').value);
-		
-			fetch('login.php', {
-				method: 'POST',
-				body: formData
-			})
-			.then(res => res.text())
-			.then(res => {
-				if (res === "success") {
-					window.location.href = "painel.php"; // ou página inicial do usuário
-				} else if (res === "senha_incorreta") {
-					alert("Senha incorreta.");
-				} else if (res === "usuario_nao_encontrado") {
-					alert("Usuário ou e-mail não encontrado.");
-				} else if (res === "faltam_dados") {
-					alert("Preencha todos os campos.");
-				} else {
-					alert("Erro inesperado: " + res);
-				}
-			});
-		});
-		</script>		
+        <form id="loginForm">
+            <div class="input-group">
+                <i class="fas fa-user input-icon"></i>
+                <input type="text" name="email" id="email" placeholder="Usuário ou E-mail" required>
+            </div>
+        
+            <div class="input-group">
+                <i class="fas fa-lock input-icon"></i>
+                <input type="password" name="senha" id="senha" placeholder="Senha" required>
+            </div>
+        
+            <button type="submit">Entrar</button>
+        
+            <div class="options">
+                <label>
+                    <input type="checkbox"> Lembrar-me
+                </label>
+                <a href="recuperacao.html" style="float: right;">Esqueceu a senha?</a>
+            </div>
+        </form>
+        
+        <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simulação de validação de login
+            const email = document.getElementById('email').value;
+            const senha = document.getElementById('senha').value;
+            
+            if(email && senha) {
+                // Aqui você pode adicionar validação mais complexa se necessário
+                // Redireciona para bem-vindo.html após o "login"
+                window.location.href = "bem vindo.html";
+            } else {
+                alert("Por favor, preencha todos os campos.");
+            }
+        });
+        </script>
     </div>
 </body>
 </html>
