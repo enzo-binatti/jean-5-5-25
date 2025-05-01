@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #9a93fb 0%, #6257f5 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .login-container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            padding: 40px;
+            text-align: center;
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        label {
+            display: block;
+            text-align: left;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        input:focus {
+            border-color: #6257f5;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(98, 87, 245, 0.2);
+        }
+        button {
+            background: linear-gradient(to right, #6257f5, #9a93fb);
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(98, 87, 245, 0.4);
+        }
+        .forgot-password, .back-to-login {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #666;
+        }
+        .forgot-password a, .back-to-login a {
+            color: #6257f5;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .forgot-password a:hover, .back-to-login a:hover {
+            text-decoration: underline;
+        }
+        .icon {
+            position: absolute;
+            right: 15px;
+            top: 38px;
+            color: #999;
+        }
+        .mensagem {
+            text-align: center;
+            color: red;
+            margin-top: 10px;
+        }
+        .btn-visitante {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            background: #f0f0f0;
+            color: #333;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .btn-visitante:hover {
+            background: #e0e0e0;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+
+<div class="login-container">
+    <h1>Login</h1>
+
+    <?php if (isset($_SESSION['erro'])): ?>
+        <div class="mensagem"><?= $_SESSION['erro']; unset($_SESSION['erro']); ?></div>
+    <?php endif; ?>
+
+    <form action="/tarefa_do_jean/login.php" method="post">
+        <!-- campos do formulário -->
+    </form>
+    <a href="bem vindo.html" class="btn-visitante">Continuar sem login</a>
+            <div class="form-group">
+            <label for="email">E-mail</label>
+            <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
+            <i class="fas fa-envelope icon"></i>
+        </div>
+        <div class="form-group">
+            <label for="password">Senha</label>
+            <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+            <i class="fas fa-lock icon"></i>
+        </div>
+        <button type="submit">Entrar</button>
+        <div class="forgot-password">
+            <a href="../views/recuperacao.html">Esqueceu sua senha?</a><br>
+            <a href="../views/Cadastro.html">Não tem uma conta?</a>
+        </div>
+    </form>
+    
+    <a href="bem vindo.html" class="btn-visitante">Continuar sem login</a>
+</div>
+
+</body>
+</html>
