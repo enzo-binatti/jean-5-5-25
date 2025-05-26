@@ -1,224 +1,218 @@
 <?php
-// Incluir arquivos de conexão e funções
-require_once 'conexao.php';
-require_once 'funcoes.php';
-
-// Inicializar variáveis
-$emailSelecionado = null;
-$emails = buscarEmails($conexao);
-
-// Verificar se um email foi selecionado
-if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-    $emailSelecionado = buscarEmailPorId($conexao, $id);
-    
-    // Marcar como lido se encontrado
-    if ($emailSelecionado) {
-        marcarComoLido($conexao, $id);
-    }
-}
+session_start();
 ?>
-
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interface de Email</title>
-    <!-- Bootstrap 5 CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+    <title>acesso</title>
     <style>
-        html, body {
-            height: 100%;
-            overflow-x: hidden;
-        }
-        
-        .email-container {
-            height: calc(100vh - 56px);
-        }
-        
-        .email-list {
-            height: 100%;
-            overflow-y: auto;
-            background-color: #f8f9fa;
-            border-right: 1px solid #dee2e6;
-        }
-        
-        .email-detail {
-            height: 100%;
-            overflow-y: auto;
-        }
-        
-        .email-item {
-            cursor: pointer;
-            padding: 15px;
-            border-bottom: 1px solid #dee2e6;
-        }
-        
-        .email-item:hover {
-            background-color: #f1f3f5;
-        }
-        
-        .email-item.active {
-            background-color: #0d6efd;
-            color: white;
-        }
-        
-        .email-item.active .text-muted {
-            color: rgba(255, 255, 255, 0.75) !important;
-        }
-        
-        .email-item.unread {
-            font-weight: bold;
-        }
-        
-        .unread-indicator {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background-color: #0d6efd;
-            margin-right: 8px;
-        }
-        
-        .empty-state {
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100%;
-            color: #6c757d;
+            height: 100vh;
         }
         
-        @media (max-width: 767.98px) {
-            .email-container {
-                height: auto;
-            }
-            
-            .email-list, .email-detail {
-                height: auto;
-                max-height: 100vh;
-            }
+        .container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 350px;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .link {
+            color: #4CAF50;
+            cursor: pointer;
+            margin-top: 15px;
+            display: block;
+        }
+        
+        .link:hover {
+            text-decoration: underline;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .error {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="bg-primary text-white p-3">
-        <h1 class="h4 m-0">Email Dashboard</h1>
-    </header>
+    <div class="container">
+        <!-- Formulário de Login -->
+        <div id="login-form">
+            <h2>Login</h2>
+            <div id="login-error" class="error hidden"></div>
+            <input type="email" id="login-email" placeholder="E-mail" required>
+            <input type="password" id="login-password" placeholder="Senha" required>
+            <button onclick="login()">Entrar</button>
+            <span class="link" onclick="showForm('register-form')">Não tem uma conta? Cadastre-se</span>
+            <span class="link" onclick="showForm('recover-form')">Esqueci minha senha</span>
+        </div>
+        
+        <!-- Formulário de Cadastro -->
+        <div id="register-form" class="hidden">
+            <h2>Cadastro</h2>
+            <div id="register-error" class="error hidden"></div>
+            <input type="text" id="register-name" placeholder="Nome completo" required>
+            <input type="email" id="register-email" placeholder="E-mail" required>
+            <input type="password" id="register-password" placeholder="Senha" required>
+            <input type="password" id="register-confirm-password" placeholder="Confirme a senha" required>
+            <input type="number" id="register-telefone" placeholder="telefone" required>
+            <button onclick="register()">Cadastrar</button>
+            <span class="link" onclick="showForm('login-form')">Voltar para o login</span>
+        </div>
+        
+        <!-- Formulário de Recuperação de Senha -->
+        <div id="recover-form" class="hidden">
+            <h2>Recuperar Senha</h2>
+            <div id="recover-error" class="error hidden"></div>
+            <div id="recover-success" class="hidden">Um e-mail com instruções foi enviado para o endereço fornecido.</div>
+            <input type="email" id="recover-email" placeholder="Digite seu e-mail" required>
+            <button onclick="recoverPassword()">Recuperar Senha</button>
+            <span class="link" onclick="showForm('login-form')">Voltar para o login</span>
+        </div>
 
-    <!-- Main Content -->
-    <div class="container-fluid p-0">
-        <div class="row g-0 email-container">
-            <!-- Email List -->
-            <div class="col-md-4 col-lg-3 email-list">
-                <?php if (empty($emails)): ?>
-                    <div class="text-center p-4 text-muted">
-                        <p>Nenhum email encontrado</p>
-                    </div>
-                <?php else: ?>
-                    <?php foreach ($emails as $email): ?>
-                        <a href="?id=<?php echo $email['id']; ?>" class="text-decoration-none">
-                            <div class="email-item <?php echo ($emailSelecionado && $emailSelecionado['id'] == $email['id']) ? 'active' : ''; ?> <?php echo $email['lido'] ? '' : 'unread'; ?>">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div class="ms-2 me-auto">
-                                        <div class="d-flex align-items-center mb-1">
-                                            <?php if (!$email['lido']): ?>
-                                                <span class="unread-indicator"></span>
-                                            <?php endif; ?>
-                                            <span><?php echo htmlspecialchars($email['usuario']); ?></span>
-                                        </div>
-                                        <div class="<?php echo ($emailSelecionado && $emailSelecionado['id'] == $email['id']) ? '' : 'text-muted'; ?> small">
-                                            <?php echo htmlspecialchars('Recuperação de senha!'); ?>
-                                        </div>
-                                    </div>
-                                    <small class="<?php echo ($emailSelecionado && $emailSelecionado['id'] == $email['id']) ? '' : 'text-muted'; ?>">
-                                        <?php echo formatarData("Teste"); ?>
-                                    </small>
-                                </div>
-                            </div>
-                        </a>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
-
-            <!-- Email Detail -->
-            <div class="col-md-8 col-lg-9 email-detail">
-                <?php if ($emailSelecionado): ?>
-                    <div class="p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h2 class="h4"><?php echo htmlspecialchars("Atualização de Acesso à Conta."); ?></h2>
-                            <span class="text-muted"><?php echo formatarData("Informamos que o acesso à sua conta foi atualizado com sucesso.
-
-Seu novo código de acesso é:
-
-🔐 Código de Acesso: JKL012
-
-Por motivos de segurança, recomendamos que você mantenha este código em local seguro. Em caso de dúvidas ou dificuldades, nossa equipe está pronta para ajudar.
-
-Com cordialidade,  
-Equipe de Atendimento"); ?></span>
-                        </div>
-
-                        <div class="card mb-4">
-                            <div class="card-header bg-light">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <strong>De:</strong> <?php echo htmlspecialchars($emailSelecionado['usuario']); ?>
-                                    </div>
-                                    <div>
-                                        <span class="badge bg-secondary">Código: <?php echo htmlspecialchars($emailSelecionado['code']); ?></span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <p class="card-text"><?php echo nl2br(htmlspecialchars("Informamos que o acesso à sua conta foi atualizado com sucesso.
-
-Seu novo código de acesso é:
-
-🔐 Código de Acesso: JKL012
-
-Por motivos de segurança, recomendamos que você mantenha este código em local seguro. Em caso de dúvidas ou dificuldades, nossa equipe está pronta para ajudar.
-
-Com cordialidade,  
-Equipe de Atendimento")); ?></p>
-                            </div>
-                        </div>
-
-                        <div class="card">
-                            <div class="card-header bg-light">
-                                <h3 class="h5 mb-0">Detalhes do Usuário</h3>
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <p>
-                                            <strong>Usuário:</strong> <?php echo htmlspecialchars($emailSelecionado['usuario']); ?>
-                                        </p>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <p>
-                                            <strong>Código:</strong> <?php echo htmlspecialchars($emailSelecionado['code']); ?>
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <?php else: ?>
-                    <div class="empty-state">
-                        <i class="bi bi-envelope fs-1"></i>
-                        <p>Selecione um email para ver seu conteúdo</p>
-                    </div>
-                <?php endif; ?>
-            </div>
+        <div id="recover-form" class="hidden">
+            <h2>telefone</h2>
+            <div id="recover-error" class="error hidden"></div>
+            <div id="recover-success" class="hidden">telefone</div>
+            <input type="number" id="telefone" placeholder="Digite seu telefone" required>
         </div>
     </div>
 
-    <!-- Bootstrap 5 JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>        // Simulação de "banco de dados" em localStorage
+        if (!localStorage.getItem('users')) {
+            localStorage.setItem('users', JSON.stringify([]));
+        }
+        
+        function showForm(formId) {
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('register-form').classList.add('hidden');
+            document.getElementById('recover-form').classList.add('hidden');
+            
+            document.getElementById(formId).classList.remove('hidden');
+            
+            // Limpar erros
+            document.getElementById('login-error').classList.add('hidden');
+            document.getElementById('register-error').classList.add('hidden');
+            document.getElementById('recover-error').classList.add('hidden');
+            document.getElementById('recover-success').classList.add('hidden');
+        }
+        
+        function login() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorElement = document.getElementById('login-error');
+            
+            const users = JSON.parse(localStorage.getItem('users'));
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                // Redireciona para bem_vindo.html após login bem-sucedido
+                window.location.href = 'bem_vindo.html';
+            } else {
+                errorElement.textContent = "E-mail ou senha incorretos.";
+                errorElement.classList.remove('hidden');
+            }
+        }
+        
+        function register() {
+            const name = document.getElementById('register-name').value;
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            const errorElement = document.getElementById('register-error');
+            
+            // Validações
+            if (password !== confirmPassword) {
+                errorElement.textContent = "As senhas não coincidem.";
+                errorElement.classList.remove('hidden');
+                return;
+            }
+            
+            if (password.length < 6) {
+                errorElement.textContent = "A senha deve ter pelo menos 6 caracteres.";
+                errorElement.classList.remove('hidden');
+                return;
+            }
+            
+            const users = JSON.parse(localStorage.getItem('users'));
+            
+            // Verifica se o e-mail já está cadastrado
+            if (users.some(u => u.email === email)) {
+                errorElement.textContent = "Este e-mail já está cadastrado.";
+                errorElement.classList.remove('hidden');
+                return;
+            }
+            
+            // Adiciona o novo usuário
+            users.push({ name, email, password });
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            alert("Cadastro realizado com sucesso! Faça login para continuar.");
+            showForm('login-form');
+        }
+        
+        function recoverPassword() {
+            const email = document.getElementById('recover-email').value;
+            const errorElement = document.getElementById('recover-error');
+            const successElement = document.getElementById('recover-success');
+            
+            const users = JSON.parse(localStorage.getItem('users'));
+            const userExists = users.some(u => u.email === email);
+            
+            if (userExists) {
+                // Em um sistema real, você enviaria um e-mail com um link para redefinir a senha
+                successElement.classList.remove('hidden');
+                errorElement.classList.add('hidden');
+            } else {
+                errorElement.textContent = "E-mail não encontrado.";
+                errorElement.classList.remove('hidden');
+                successElement.classList.add('hidden');
+            }
+        }</script>
 </body>
 </html>
